@@ -1,4 +1,4 @@
-import pygame
+
 import random
 import os
 import time
@@ -8,13 +8,14 @@ import pickle
 from board import Board
 import numpy as np
 import math
-pygame.font.init()  # init font
+import pygame
+
 
 WIN_WIDTH = 600
 WIN_HEIGHT = 800
 FLOOR = 730
-STAT_FONT = pygame.font.SysFont("comicsans", 50)
-END_FONT = pygame.font.SysFont("comicsans", 70)
+# STAT_FONT = pygame.font.SysFont("comicsans", 50)
+# END_FONT = pygame.font.SysFont("comicsans", 70)
 DRAW_LINES = False
 
 WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
@@ -85,7 +86,8 @@ def eval_genomes(genomes, config):
             init256 = board.numNum(256)
             init512 = board.numNum(512)
             init1024 = board.numNum(1024)
-            fitness = 0
+            init2048 = board.numNum(2048)
+            #fitness = 0
             moved = False
             output = nets[boards.index(board)].activate((board.matrix[0][0]/norml,
                                                             board.matrix[0][1]/norml,
@@ -178,32 +180,41 @@ def eval_genomes(genomes, config):
             #print(board.toString())
         #print('tab is :')
         #print(tab)
-        newZero = board.numZeros()
-        if moved:
-            # print('the added value is ')
-            # print(2**(initZero - newZero))
-            # print(8/(17-newZero))
-            # print(math.tanh((2 - board.symCount()))*2)
-            # print(board.symCount())
-            ge[x].fitness += 1
-            ge[x].fitness += 2**(initZero - newZero)
-            ge[x].fitness += 8*(8/(17-newZero) - .5)
-            ge[x].fitness += math.tanh((12 - board.symCount()))*2
+            newZero = board.numZeros()
+            if moved:
+                # print('the added value is ')
+                # print(2**(initZero - newZero))
+                # print(8/(17-newZero))
+                # print(math.tanh((2 - board.symCount()))*2)
+                # print(board.symCount())
+                ge[x].fitness += 1
+                ge[x].fitness += 8*2**(initZero - newZero)
+                ge[x].fitness += 10*(8/(17-newZero) - .5)
+                ge[x].fitness += math.tanh((12 - board.symCount()))*2
+                #print (ge[x].fitness)
 
-            if board.numNum(128) - init128 > 0:
-               ge[x].fitness += 10
-            if board.numNum(256) - init256 > 0:
-               ge[x].fitness += 50
-            if board.numNum(512) - init512 > 0:
-               ge[x].fitness += 100
-            if board.numNum(1024) - init1024 > 0:
-               ge[x].fitness += 100000
-        if x ==1:
-            print('the board fitness is ')
-            print (ge[x].fitness)
+                if board.numNum(128) - init128 > 0:
+                   ge[x].fitness += 10
+                if board.numNum(256) - init256 > 0:
+                   ge[x].fitness += 50
+                if board.numNum(512) - init512 > 0:
+                   ge[x].fitness += 100
+                if board.numNum(1024) - init1024 > 0:
+                   ge[x].fitness += 7000
+                if board.numNum(2048) - init2048 > 0:
+                   ge[x].fitness += 100000
+                # print('x  and fitness are ')
+                # print(x)
+                # print (ge[x].fitness)
+
+        if x ==0:
+            # print('the board fitness is ')
+            # print (ge[x].fitness)
+            a = 3
 
         for board in boards:
             if board.game_state() == 0:
+
                 #print('something broke')
                 nets.pop(boards.index(board))
                 ge.pop(boards.index(board))
