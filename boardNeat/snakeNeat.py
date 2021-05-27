@@ -61,6 +61,8 @@ def eval_genomes(genomes, config):
             nex_index = ind_arr[-2]
             third_index = ind_arr[-3]
             fourth_index = ind_arr[-4]
+
+            initScore = game.score
             if max_index == 0:
                 game.move_left()
             if max_index == 1:
@@ -70,6 +72,7 @@ def eval_genomes(genomes, config):
             if max_index == 3:
                 game.move_down()
 
+            newScore = game.score
             # print('gene num is ')
             # print(x)
             # print(max_index)
@@ -84,6 +87,18 @@ def eval_genomes(genomes, config):
                 #print('popped one')
             else:
                 ge[x].fitness += 1
+                ge[x].fitness += 4*2**(-1*game.distToFood()/15)
+                if game.d2f < game.d2fPrev:
+                    ge[x].fitness += 3
+                    if x == 0:
+                        print("got closer")
+                else:
+                    ge[x].fitness -= 2
+                if x == 0:
+
+                    print(4*2**(-1*game.distToFood()/15))
+                if newScore - initScore > 0:
+                    ge[x].fitness += 100
             if tab % 100 == 0:
                 print('did 100 runs')
                 print(tab)

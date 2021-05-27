@@ -1,4 +1,4 @@
-import sys, time, random
+import sys, time, random, math
 import numpy as np
 np.set_printoptions(threshold=np.inf,linewidth=1000)
 
@@ -28,6 +28,14 @@ class snakeGame():
 		self.history = []
 		self.history.append(self.toString())
 		self.popCount = 0
+		self.d2f = self.distToFood()
+		self.d2fPrev = 0
+
+	def distToFood(self):
+		deltaX = self.pos[0] - self.food_pos[0]
+		deltaY = self.pos[1] - self.food_pos[1]
+		dist = math.sqrt(deltaX**2 + deltaY**2)
+		return float(dist/10)
 
 	def move_up(self):
 		if self.direction != 'down':
@@ -76,6 +84,8 @@ class snakeGame():
 		if not self.food_spawn:
 			self.food_pos = [random.randrange(1, (frame_size_x//10)-1) * 10, random.randrange(1, (frame_size_y//10)-1) * 10]
 		self.food_spawn = True
+		self.d2fPrev = self.d2f 
+		self.d2f = self.distToFood()
 
 	def checkGame(self):
 		if self.pos[0] < 0 or self.pos[0] > frame_size_x - 20:
