@@ -30,6 +30,66 @@ class snakeGame():
 		self.popCount = 0
 		self.d2f = self.distToFood()
 		self.d2fPrev = 0
+		self.sight = self.game8()
+
+	def game8(self):
+		vals = []
+		vals.append(self.propDirect([10,0]))
+		vals.append(self.propDirect([0,10]))
+		vals.append(self.propDirect([0,-10]))
+		vals.append(self.propDirect([-10,0]))
+
+		vals.append(self.propDirect([10,10]))
+		vals.append(self.propDirect([10,-10]))
+		vals.append(self.propDirect([-10,10]))
+		vals.append(self.propDirect([-10,-10]))
+		self.sight = vals
+		return vals
+	def collideWall(self,arr):
+		hld = False
+		if arr[0] < 0 or arr[1] < 0 or arr[0] > frame_size_x or arr[1] > frame_size_y:
+			#print('broke somethign')
+			hld = True
+		return hld
+	def propDirect(self,direct):
+		#print('called propDirects')
+		vals = []
+		direct = np.array(direct)
+		pos = np.array(self.pos)
+		#pos = pos + direct
+		foodFound = False
+		bodyFound = False
+		distance = .01
+		hld = 0
+		while not self.collideWall(pos):
+			#print(pos)
+			#print(direct)
+			for i in self.body:
+				if np.array_equal(i,pos):
+					bodyFound = True
+			if np.array_equal(self.food_pos,pos):
+				foodFound = True
+			distance += 1
+			pos = pos + direct 
+			hld += 1
+			if hld > 100:
+				print("this is hella broke")
+				print(pos)
+				print(direct)
+				break
+		#print('left while loop')
+		if bodyFound:
+			vals.append(1)
+		else:
+			vals.append(0)
+		if foodFound:
+			vals.append(1)
+		else:
+			vals.append(0)
+		vals.append(1/distance)
+
+		return vals
+
 
 	def distToFood(self):
 		deltaX = self.pos[0] - self.food_pos[0]
@@ -86,6 +146,7 @@ class snakeGame():
 		self.food_spawn = True
 		self.d2fPrev = self.d2f 
 		self.d2f = self.distToFood()
+		self.sight = self.game8()
 
 	def checkGame(self):
 		if self.pos[0] < 0 or self.pos[0] > frame_size_x - 20:
