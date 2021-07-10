@@ -56,10 +56,10 @@ class snakeGame():
 		vals = []
 		direct = np.array(direct)
 		pos = np.array(self.pos)
-		#pos = pos + direct
+		pos = pos + direct
 		foodFound = False
 		bodyFound = False
-		distance = .01
+		distance = .5
 		hld = 0
 		while not self.collideWall(pos):
 			#print(pos)

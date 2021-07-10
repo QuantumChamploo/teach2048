@@ -8,6 +8,8 @@ import pickle
 from bareSnake import snakeGame
 import numpy as np
 import math
+from neat.graphs import feed_forward_layers
+from neat.graphs import required_for_output
 
 gen = 0
 
@@ -42,6 +44,7 @@ def eval_genomes(genomes, config):
         nets.append(net)
         games.append(snakeGame())
         ge.append(genome)
+
     run = True
     tab = 0
 
@@ -53,6 +56,7 @@ def eval_genomes(genomes, config):
             print(len(games))
 
         for x, game in enumerate(games):
+            ge[x].game = game
             moved = False
             #output = nets[games.index(game)].activate((makeList(game.toString())))
             output = nets[games.index(game)].activate((makeList(game.sight)))
@@ -81,6 +85,11 @@ def eval_genomes(genomes, config):
             if game.popCount > 40:
             	alive = False
             if alive == False:
+                if len(games) == 1:
+                    #print(game.history)
+                    #print(game.sight)
+                    hlder = 33
+
                 nets.pop(games.index(game))
                 ge.pop(games.index(game))
                 games.pop(games.index(game))
@@ -138,7 +147,7 @@ def run(config_file):
     #p.add_reporter(neat.Checkpointer(5))
 
     # Run for up to 50 generations.
-    winner = p.run(eval_genomes,1000)
+    winner = p.run(eval_genomes,10000)
 
     # show final stats
     print('\nBest genome:\n{!s}'.format(winner))
@@ -152,6 +161,24 @@ def run(config_file):
                                                     ,-22:'SW body',-23:'SW food',-24:'SW dist'}
     visualize.draw_net(config, winner, True, 'snakeMultLayer5',node_names=node_names)
     print(repr(winner))
+    print("the fitness is ")
+    print(winner.fitness)
+    visualize.plot_stats(stats, ylog=False, view=True)
+    visualize.plot_species(stats, view=True)
+
+    connections = [cg.key for cg in winner.connections.values() if cg.enabled]
+    print("printing connections")
+    print(connections)
+
+    layers = feed_forward_layers(config.genome_config.input_keys, config.genome_config.output_keys, connections)
+    print("printing layers")
+    print(layers)
+
+    req = required_for_output(config.genome_config.input_keys, config.genome_config.output_keys, connections)
+    print("printing required")
+    print(req)
+
+    print(winner.game.history)
 
 if __name__ == '__main__':
     print('in start')
