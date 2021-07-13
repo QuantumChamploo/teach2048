@@ -19,7 +19,7 @@ class snakeGame():
 	def __init__(self):
 		self.pos = [100, 50]
 		self.body = [[100, 50], [100-10, 50], [100-(2*10), 50]]
-		self.food_pos = [random.randrange(1, (frame_size_x//10)) * 10, random.randrange(1, (frame_size_y//10)) * 10]
+		self.food_pos = self.makeFood()
 		self.food_spawn = True
 		self.direction = 'right'
 		self.change_to = self.direction
@@ -31,6 +31,15 @@ class snakeGame():
 		self.d2f = self.distToFood()
 		self.d2fPrev = 0
 		self.sight = self.game8()
+	def makeFood(self):
+		madeFood = False
+		while not madeFood:
+			foodPos =  [random.randrange(1, (frame_size_x//10)) * 10-10, random.randrange(1, (frame_size_y//10)) * 10-10]
+			if foodPos in self.body:
+				madeFood = False
+			else:
+				madeFood = True
+		return foodPos
 
 	def game8(self):
 		vals = []
@@ -51,6 +60,15 @@ class snakeGame():
 			#print('broke somethign')
 			hld = True
 		return hld
+
+	def nearWall(self):
+		if self.pos[0] == 0 or self.pos[0] == frame_size_x - 10:
+			return True
+		if self.pos[1] == 0 or self.pos[1] == frame_size_y - 10:
+			return True
+		else:
+			return False
+
 	def propDirect(self,direct):
 		#print('called propDirects')
 		vals = []
@@ -101,26 +119,47 @@ class snakeGame():
 		if self.direction != 'down':
 			self.direction = 'up'
 			self.pos[1] -= 10
-		self.moveGrow()
-		self.history.append(self.toString())
+			self.checkGame()
+			if self.gameOver == False:
+				self.moveGrow()
+				self.history.append(self.toString())
+		else:
+			self.move_straight()
+			dummy_var = 3
 	def move_down(self):
 		if self.direction != 'up':
 			self.direction = 'down'
 			self.pos[1] += 10
-		self.moveGrow()
-		self.history.append(self.toString())
+			self.checkGame()
+			if self.gameOver == False:
+				self.moveGrow()
+				self.history.append(self.toString())
+		else:
+			self.move_straight()
+			dummy_var = 3
 	def move_left(self):
+
 		if self.direction != 'right':
 			self.direction = 'left'
 			self.pos[0] -= 10
-		self.moveGrow()
-		self.history.append(self.toString())
+			self.checkGame()
+			if self.gameOver == False:
+				self.moveGrow()
+				self.history.append(self.toString())
+		else:
+			self.move_straight()
+			dummy_var = 3
 	def move_right(self):
 		if self.direction != 'left':
 			self.direction = 'right'
 			self.pos[0] += 10
-		self.moveGrow()
-		self.history.append(self.toString())
+			self.checkGame()
+			if self.gameOver == False:
+				self.moveGrow()
+				self.history.append(self.toString())
+		else:
+			self.move_straight()
+			dummy_var = 3
 	def move_straight(self):
 		if self.direction == 'right':
 			self.move_right()
@@ -142,17 +181,17 @@ class snakeGame():
 			self.popCount += 1
 			self.body.pop()
 		if not self.food_spawn:
-			self.food_pos = [random.randrange(1, (frame_size_x//10)-1) * 10, random.randrange(1, (frame_size_y//10)-1) * 10]
+			self.food_pos = self.makeFood()
 		self.food_spawn = True
 		self.d2fPrev = self.d2f 
 		self.d2f = self.distToFood()
 		self.sight = self.game8()
 
 	def checkGame(self):
-		if self.pos[0] < 0 or self.pos[0] > frame_size_x - 20:
+		if self.pos[0] < 0 or self.pos[0] >= frame_size_x :
 			self.gameOver = True
 			return False
-		if self.pos[1] < 0 or self.pos[1] > frame_size_y - 20:
+		if self.pos[1] < 0 or self.pos[1] >= frame_size_y:
 			self.gameOver = True
 			return False
 		for block in self.body[1:]:

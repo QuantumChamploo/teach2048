@@ -29,7 +29,7 @@ def find_index(array):
     return sort_index
 
 def eval_genomes(genomes, config):
-    print('in eval')
+    #print('in eval')
 
     global gen
 
@@ -52,10 +52,10 @@ def eval_genomes(genomes, config):
 
     while run and len(games) > 0:
         tab +=1
-        if tab % 100 == 0:
-            print('did 100 runs')
-            print(tab)
-            print(len(games))
+        # if tab % 100 == 0:
+        #     print('did 100 runs')
+        #     print(tab)
+        #     print(len(games))
 
         for x, game in enumerate(games):
             ge[x].game = game
@@ -69,6 +69,7 @@ def eval_genomes(genomes, config):
             fourth_index = ind_arr[-4]
 
             initScore = game.score
+            initFit = ge[x].fitness
             if max_index == 0:
                 game.move_left()
             if max_index == 1:
@@ -86,7 +87,8 @@ def eval_genomes(genomes, config):
             # print(game.direction)
             alive = game.checkGame()
             if game.popCount > 400:
-            	alive = False
+                alive = False
+                #print("over pop")
             if alive == False:
                 if len(games) == 1:
                     #print(game.history)
@@ -100,6 +102,9 @@ def eval_genomes(genomes, config):
             else:
                 if game.popCount < 40:
                     ge[x].fitness += 5
+                    if move_dict[max_index][1] == 1:
+                        ge[x].fitness += 10
+
                 #ge[x].fitness += 4*2**(-1*game.distToFood()/15)
                 # if game.d2f < game.d2fPrev:
                 #     ge[x].fitness += 3
@@ -108,6 +113,12 @@ def eval_genomes(genomes, config):
                 # else:
                 #     ge[x].fitness -= 2
                 # # if x == 0:
+                # else:
+                #     print("greater than 40 pops")
+                #     print(game.history)
+                #     print("\n")
+                #     print("\n")
+                #     print("\n")
 
                 #     print(4*2**(-1*game.distToFood()/15))
                 if newScore - initScore > 0:
@@ -116,20 +127,21 @@ def eval_genomes(genomes, config):
                     # if game.score > 1:
                     #     for i in game.history:
                     #         print(i)
-                    # print("ATE one!")
-                if move_dict[max_index][1] == 1:
-                    ge[x].fitness += 10
+                if ge[x].fitness > initFit and game.popCount >40:
+                    print("something is not good")
+
                     #print('moving towards food')
-            if tab % 100 == 0:
-                print('did 100 runs')
-                print(tab)
-                print(len(games))
-                print('gene num is ')
-                print(x)
-                print(max_index)
-                print(game.direction)
-                print(game.pos)
-                print(game.popCount)
+
+        #  if tab % 100 == 0:
+                # print('did 100 runs')
+                # print(tab)
+                # print(len(games))
+                # print('gene num is ')
+                # print(x)
+                # print(max_index)
+                # print(game.direction)
+                # print(game.pos)
+                # print(game.popCount)
             # if x == 0:
             # 	print(game.toString())
             # 	print("---")
@@ -144,7 +156,7 @@ def run(config_file):
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
                          neat.DefaultSpeciesSet, neat.DefaultStagnation,
                          config_file)
-    print('post config')
+    #print('post config')
     # Create the population, which is the top-level object for a NEAT run.
     p = neat.Population(config)
 
@@ -155,23 +167,23 @@ def run(config_file):
     #p.add_reporter(neat.Checkpointer(5))
 
     # Run for up to 50 generations.
-    winner = p.run(eval_genomes,50)
+    winner = p.run(eval_genomes,250)
 
     # show final stats
     print('\nBest genome:\n{!s}'.format(winner))
     node_names = {0:'left',1:'right',2:'up',3:'down',-1:'E body',-2:'E food',-3:'E dist'
-                                                    ,-4:'N body',-5:'N food',-6:'N dist'
-                                                    ,-7:'S body',-8:'S food',-9:'S dist'
+                                                    ,-4:'S body',-5:'S food',-6:'S dist'
+                                                    ,-7:'N body',-8:'N food',-9:'N dist'
                                                     ,-10:'W body',-11:'W food',-12:'W dist'
-                                                    ,-13:'NE body',-14:'NE food',-15:'NE dist'
-                                                    ,-16:'SE body',-17:'SE food',-18:'SE dist'
-                                                    ,-19:'NW body',-20:'NW food',-21:'NW dist'
-                                                    ,-22:'SW body',-23:'SW food',-24:'SW dist'}
-    visualize.draw_net(config, winner, True, 'snakeMultLayer5',node_names=node_names)
+                                                    ,-13:'SE body',-14:'SE food',-15:'SE dist'
+                                                    ,-16:'NE body',-17:'NE food',-18:'NE dist'
+                                                    ,-19:'SW body',-20:'SW food',-21:'SW dist'
+                                                    ,-22:'NW body',-23:'NW food',-24:'NW dist'}
+    visualize.draw_net(config, winner, True, 'snakeMultLayerStnd3',node_names=node_names)
     print(repr(winner))
     print("the fitness is ")
     print(winner.fitness)
-    visualize.plot_stats(stats, ylog=False, view=True)
+    visualize.plot_stats(stats,"Population's average and best fitness: Standard Script 3 full no direct", ylog=False, view=True)
     visualize.plot_species(stats, view=True)
 
     connections = [cg.key for cg in winner.connections.values() if cg.enabled]
@@ -189,10 +201,10 @@ def run(config_file):
     print(winner.game.history)
 
 if __name__ == '__main__':
-    print('in start')
+    #print('in start')
     # Determine path to configuration file. This path manipulation is
     # here so that the script will run successfully regardless of the
     # current working directory.
     local_dir = os.path.dirname(__file__)
-    config_path = os.path.join(local_dir, 'config-feedforwardSightSnake.txt')
+    config_path = os.path.join(local_dir, 'configStandardSnake.txt')
     run(config_path)
