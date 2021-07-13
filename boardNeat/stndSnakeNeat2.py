@@ -167,7 +167,7 @@ def run(config_file):
     #p.add_reporter(neat.Checkpointer(5))
 
     # Run for up to 50 generations.
-    winner = p.run(eval_genomes,200)
+    winner = p.run(eval_genomes,250)
 
     # show final stats
     print('\nBest genome:\n{!s}'.format(winner))
@@ -183,7 +183,7 @@ def run(config_file):
     print(repr(winner))
     print("the fitness is ")
     print(winner.fitness)
-    visualize.plot_stats(stats,"Population's average and best fitness: Standard script 2", ylog=False, view=True)
+    visualize.plot_stats(stats,"Population's average and best fitness: Standard full direct", ylog=False, view=True)
     visualize.plot_species(stats, view=True)
 
     connections = [cg.key for cg in winner.connections.values() if cg.enabled]
@@ -198,7 +198,7 @@ def run(config_file):
     print("printing required")
     print(req)
 
-    print(winner.game.history)
+    #print(winner.game.history)
 
 if __name__ == '__main__':
     #print('in start')

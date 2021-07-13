@@ -7,7 +7,7 @@ import numpy as np
 
 class Board():
     def __init__(self):
-        print('in init')
+        #print('in init')
         self.commands = {'up':self.up, 'down':self.down,'left':self.left,'right':self.right}
         self.history = []
         self.new_game()
@@ -114,7 +114,7 @@ class Board():
 
 
     def up(self):
-        print('up')
+        #print('up')
         self.transpose()
         done = self.cover_up()
         done = self.merge(done)
@@ -126,7 +126,7 @@ class Board():
         return done
 
     def down(self):
-        print('down')
+        #print('down')
         self.transpose()
         self.reverse()
         done = self.cover_up()
@@ -140,7 +140,7 @@ class Board():
         return done
 
     def left(self):
-        print('left')
+        #print('left')
         done = self.cover_up()
         done = self.merge(done)
         self.cover_up()
@@ -150,7 +150,7 @@ class Board():
         return  done    
 
     def right(self):
-        print('right')
+        #print('right')
         self.reverse()
         done = self.cover_up()
         done = self.merge(done)
@@ -164,7 +164,7 @@ class Board():
 
     def follow_instr(self,inst):
         for i in range(len(inst)):
-            print('in instructions')
+            #print('in instructions')
             print(inst[i])
             self.commands[inst[i]]()
 

@@ -1,7 +1,7 @@
 [NEAT]
 fitness_criterion     = mean
 fitness_threshold     = 70000
-pop_size              = 500
+pop_size              = 700
 reset_on_extinction   = False
 
 [DefaultGenome]
@@ -37,7 +37,7 @@ enabled_default         = True
 enabled_mutate_rate     = 0.01
 
 feed_forward            = True
-initial_connection      = full_direct
+initial_connection      = unconnected
 
 # node add/remove rates
 node_add_prob           = 0.4

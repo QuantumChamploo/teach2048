@@ -198,7 +198,7 @@ def run(config_file):
     print("printing required")
     print(req)
 
-    print(winner.game.history)
+    #print(winner.game.history)
 
 if __name__ == '__main__':
     #print('in start')
