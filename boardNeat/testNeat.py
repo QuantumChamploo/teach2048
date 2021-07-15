@@ -8,18 +8,13 @@ import pickle
 from board import Board
 import numpy as np
 import math
-import pygame
+
+from neat.graphs import feed_forward_layers
+from neat.graphs import required_for_output
 
 
-WIN_WIDTH = 600
-WIN_HEIGHT = 800
-FLOOR = 730
-# STAT_FONT = pygame.font.SysFont("comicsans", 50)
-# END_FONT = pygame.font.SysFont("comicsans", 70)
-DRAW_LINES = False
 
-WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
-pygame.display.set_caption("Flappy Bird")
+
 
 
 gen = 0
@@ -74,10 +69,10 @@ def eval_genomes(genomes, config):
     while run and len(boards) > 0:
         #boards[0].toString()
         tab += 1
-        if tab % 100 == 0:
-            print('did 100 runs')
-            print(tab)
-            print(len(boards))
+        # if tab % 100 == 0:
+        #     print('did 100 runs')
+        #     print(tab)
+        #     print(len(boards))
 
         for x, board in enumerate(boards):
             
@@ -242,10 +237,35 @@ def run(config_file):
     #p.add_reporter(neat.Checkpointer(5))
 
     # Run for up to 50 generations.
-    winner = p.run(eval_genomes)
+    winner = p.run(eval_genomes,3000)
 
     # show final stats
     print('\nBest genome:\n{!s}'.format(winner))
+    node_names = {0: 'left', 1: 'right', 2: 'up', 3: 'down', -1: '00', -2: '01', -3: '02'
+        , -4: '03', -5: '10', -6: '11'
+        , -7: '12', -8: '13', -9: '20'
+        , -10: '21', -11: '22', -12: '23'
+        , -13: '30', -14: '31', -15: '32'
+        , -16: '33'}
+    visualize.draw_net(config, winner, True, '2048MultLayer', node_names=node_names)
+    print(repr(winner))
+    print("the fitness is ")
+    print(winner.fitness)
+    visualize.plot_stats(stats, "Population's average and best fitness", ylog=False,
+                         view=True)
+    visualize.plot_species(stats, view=True)
+
+    connections = [cg.key for cg in winner.connections.values() if cg.enabled]
+    print("printing connections")
+    print(connections)
+
+    layers = feed_forward_layers(config.genome_config.input_keys, config.genome_config.output_keys, connections)
+    print("printing layers")
+    print(layers)
+
+    req = required_for_output(config.genome_config.input_keys, config.genome_config.output_keys, connections)
+    print("printing required")
+    print(req)
 
 
 if __name__ == '__main__':
@@ -253,5 +273,5 @@ if __name__ == '__main__':
     # here so that the script will run successfully regardless of the
     # current working directory.
     local_dir = os.path.dirname(__file__)
-    config_path = os.path.join(local_dir, 'config-feedforward2.txt')
+    config_path = os.path.join(local_dir, 'config-feedforward.txt')
     run(config_path)
